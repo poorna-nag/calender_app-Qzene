@@ -1,5 +1,4 @@
 import '../features/calendar/data/models/event_model.dart';
-import 'package:flutter/material.dart';
 
 class HolidayService {
   List<EventModel> getHolidays({

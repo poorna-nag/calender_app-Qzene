@@ -489,8 +489,7 @@ class _MonthViewState extends State<MonthView> {
                         return a.startTime.compareTo(b.startTime);
                       });
 
-                    final visibleEvents = sortedEvents.take(2);
-                    final hasMore = sortedEvents.length > 2;
+                    final visibleEvents = sortedEvents;
 
                     return SingleChildScrollView(
                       physics: const ClampingScrollPhysics(),
@@ -619,22 +618,6 @@ class _MonthViewState extends State<MonthView> {
                               );
                             }
                           }).toList(),
-                          if (hasMore && isExpanded)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 1),
-                              child: Center(
-                                child: Text(
-                                  '+${sortedEvents.length - 2} more',
-                                  style: TextStyle(
-                                    fontSize: 8.5,
-                                    color: isDark
-                                        ? Colors.white54
-                                        : Colors.grey[600],
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ),
                         ],
                       ),
                     );
