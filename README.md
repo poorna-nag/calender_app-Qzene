@@ -1,6 +1,24 @@
-# ClearDay Calendar App
+# ClearDay Calendar App 🗓️
 
 A modern, feature-rich Flutter calendar application designed with a robust **feature-based BLoC architecture** for scalability, clarity, and ease of use.
+
+---
+
+## 📱 App Demo
+
+Watch the ClearDay Calendar in action:
+
+![App Demo](demo/calendre_demo.mp4)
+
+---
+
+## 📸 Preview
+
+<p align="center">
+  <img src="flutter_01.png" alt="ClearDay Calendar Explorer" width="350">
+</p>
+
+---
 
 ## ✨ Core Features
 
@@ -12,9 +30,21 @@ A modern, feature-rich Flutter calendar application designed with a robust **fea
 - **🔌 Device Integration**: Seamlessly sync with system calendars, contacts (birthdays), and local notifications.
 - **🎨 Personalized Experience**: Dynamic dark mode support, adjustable font scales, and customizable first day of the week.
 
+---
+
+## 🚀 Performance & Reliability Optimizations
+
+Recent updates have significantly improved the app's responsiveness and stability:
+
+- **⚡ Responsive Sync Engine**: Implemented a multi-phase refresh logic. Newly added or edited events now appear **instantly** in the UI while device calendar synchronization runs in the background.
+- **🛡️ Resilient Data Loading**: Enhanced repository robustness to skip individual corrupted events during parsing, preventing a single malformed entry from causing an empty calendar display.
+- **🌍 Timezone Consistency**: Standardized date mapping to local time across all components, ensuring events are always pinned to the correct day regardless of UTC storage offsets.
+
+---
+
 ## 🏗️ Technical Architecture
 
-The application has been refactored from a legacy provider model to a professional **Feature-Based BLoC Architecture**, ensuring strict separation of concerns and modularity.
+The application is built using a professional **Feature-Based BLoC Architecture**, ensuring strict separation of concerns and modularity.
 
 ### Directory Structure
 Each feature follows a consistent layered pattern:
@@ -34,6 +64,8 @@ Each feature follows a consistent layered pattern:
 - **SettingsBloc**: Manages global preferences, aesthetics, and onboarding.
 - **MoodBloc**: Tracks and persists daily emotional wellbeing data.
 
+---
+
 ## 🛠️ Technology Stack
 
 - **State Management**: [flutter_bloc](https://pub.dev/packages/flutter_bloc) with [equatable](https://pub.dev/packages/equatable) for efficient updates.
@@ -41,13 +73,18 @@ Each feature follows a consistent layered pattern:
 - **Device Connectivity**: [device_calendar](https://pub.dev/packages/device_calendar) for system integration.
 - **Utilities**: [intl](https://pub.dev/packages/intl) for localization and date formatting.
 
+---
+
 ## 🚀 Getting Started
 
 1.  **Dependencies**: Run `flutter pub get` to install all required packages.
 2.  **Run**: Execute `flutter run` to launch the application.
 
+---
+
 ## 🔧 Recent Refactoring Highlights
 
+- **Responsive Event Lifecycle**: Fixed the issue where new events weren't displaying by separating local state updates from heavy device syncs.
 - **Architecture Migration**: Transitioned the entire state management layer from Riverpod to BLoC.
 - **Feature Modularization**: Consolidated fragmented files into cohesive feature modules (`calendar`, `mood`, `settings`).
 - **Performance Optimization**: Implemented `Equatable` for state comparison to minimize unnecessary builds.

@@ -25,14 +25,18 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   ) async {
     emit(CalendarLoading());
     final userEvents = await repository.loadUserEvents();
+    // Emit what we have locally first
+    emit(CalendarLoaded(_mapEventsByDay(userEvents), isSyncing: true));
+
+    // Then fetch device events
     final deviceEvents = await repository.fetchDeviceEvents();
     final allEvents = [...userEvents, ...deviceEvents];
-    emit(CalendarLoaded(_mapEventsByDay(allEvents)));
+    emit(CalendarLoaded(_mapEventsByDay(allEvents), isSyncing: false));
   }
 
   Future<void> _onAddEvent(AddEvent event, Emitter<CalendarState> emit) async {
     await repository.saveEvent(event.event);
-    _refreshEvents(emit);
+    await _refreshEvents(emit);
   }
 
   Future<void> _onUpdateEvent(
@@ -40,7 +44,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     Emitter<CalendarState> emit,
   ) async {
     await repository.saveEvent(event.event);
-    _refreshEvents(emit);
+    await _refreshEvents(emit);
   }
 
   Future<void> _onDeleteEvent(
@@ -48,7 +52,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     Emitter<CalendarState> emit,
   ) async {
     await repository.deleteEvent(event.event.id);
-    _refreshEvents(emit);
+    await _refreshEvents(emit);
   }
 
   Future<void> _onRestoreEvent(
@@ -56,14 +60,31 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     Emitter<CalendarState> emit,
   ) async {
     await repository.saveEvent(event.event);
-    _refreshEvents(emit);
+    await _refreshEvents(emit);
   }
 
   Future<void> _refreshEvents(Emitter<CalendarState> emit) async {
+    // Phase 1: Emit what we have (and what we just saved)
     final userEvents = await repository.loadUserEvents();
+    final List<EventModel> currentDeviceEvents = [];
+    if (state is CalendarLoaded) {
+      currentDeviceEvents.addAll(
+        (state as CalendarLoaded).events.values
+            .expand((e) => e)
+            .where((e) => e.id.startsWith('dev_')),
+      );
+    }
+    emit(
+      CalendarLoaded(
+        _mapEventsByDay([...userEvents, ...currentDeviceEvents]),
+        isSyncing: true,
+      ),
+    );
+
+    // Phase 2: Update with fresh device events if needed
     final deviceEvents = await repository.fetchDeviceEvents();
     final allEvents = [...userEvents, ...deviceEvents];
-    emit(CalendarLoaded(_mapEventsByDay(allEvents)));
+    emit(CalendarLoaded(_mapEventsByDay(allEvents), isSyncing: false));
   }
 
   Future<void> _onFetchDeviceEvents(
@@ -98,11 +119,8 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       hashCode: getHashCode,
     );
     for (var event in events) {
-      final date = DateTime(
-        event.startTime.year,
-        event.startTime.month,
-        event.startTime.day,
-      );
+      final localStart = event.startTime.toLocal();
+      final date = DateTime(localStart.year, localStart.month, localStart.day);
       if (mapped[date] == null) mapped[date] = [];
       mapped[date]!.add(event);
     }

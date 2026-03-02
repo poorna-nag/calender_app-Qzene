@@ -67,8 +67,9 @@ class _MultiDayTimetableState extends State<MultiDayTimetable> {
 
   List<EventModel> _getEventsForDay(DateTime day, {bool allDayOnly = false}) {
     return widget.events.where((e) {
-      if (allDayOnly) return e.isAllDay && _isSameDay(e.startTime, day);
-      return !e.isAllDay && _isSameDay(e.startTime, day);
+      final eventDate = e.startTime.toLocal();
+      if (allDayOnly) return e.isAllDay && _isSameDay(eventDate, day);
+      return !e.isAllDay && _isSameDay(eventDate, day);
     }).toList();
   }
 

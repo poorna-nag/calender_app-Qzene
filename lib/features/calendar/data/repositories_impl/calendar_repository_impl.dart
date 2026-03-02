@@ -19,12 +19,18 @@ class CalendarRepositoryImpl implements CalendarRepository {
     if (cachedData == null) return [];
     try {
       final List<dynamic> jsonList = jsonDecode(cachedData);
-      return jsonList
-          .map((j) => EventModel.fromJson(j))
-          .where((e) => !e.id.startsWith('dev_'))
-          .toList();
+      final List<EventModel> events = [];
+      for (var j in jsonList) {
+        try {
+          final event = EventModel.fromJson(j);
+          if (!event.id.startsWith('dev_')) events.add(event);
+        } catch (e) {
+          debugPrint('Error parsing single event: $e');
+        }
+      }
+      return events;
     } catch (e) {
-      debugPrint('Error loading user events: $e');
+      debugPrint('Error decoding user events: $e');
       return [];
     }
   }
@@ -146,7 +152,6 @@ class CalendarRepositoryImpl implements CalendarRepository {
     try {
       final List<dynamic> jsonList = jsonDecode(cachedData);
       final list = jsonList.map((j) => EventModel.fromJson(j)).toList();
-      // Purge old events (30 days)
       final now = DateTime.now();
       final cutoff = now.subtract(const Duration(days: 30));
       final filtered = list
